@@ -1,41 +1,27 @@
-import requests
+#!/usr/bin/python3
+"""
+number of subscribers for a given subreddit
+"""
+
+from requests import get
+
 
 def number_of_subscribers(subreddit):
     """
-    Queries the Reddit API and returns the number of subscribers for a given subreddit.
-    If an invalid subreddit is given, returns 0.
-
-    Args:
-    - subreddit (str): The subreddit to query.
-
-    Returns:
-    - int: The number of subscribers for the subreddit, or 0 if invalid.
+    function that queries the Reddit API and returns the number of subscribers
+    (not active users, total subscribers) for a given subreddit.
     """
-    user_agent = {'User-Agent': 'owen20108'}  # Set a custom User-Agent to avoid issues
 
-    url = f'https://www.reddit.com/r/{subreddit}/about.json'
-    
-    try:
-        response = requests.get(url, headers=user_agent, allow_redirects=False)
-
-        if response.status_code == 200:
-            data = response.json()
-            subscribers = data['data']['subscribers']
-            return subscribers
-        else:
-            print(f"Error accessing subreddit '{subreddit}': HTTP status code {response.status_code}")
-            return 0
-    except requests.RequestException as e:
-        print(f"Error: {e}")
+    if subreddit is None or not isinstance(subreddit, str):
         return 0
 
-if __name__ == "__main__":
-    import sys
+    user_agent = {'User-agent': 'Google Chrome Version 81.0.4044.129'}
+    url = 'https://www.reddit.com/r/{}/about.json'.format(subreddit)
+    response = get(url, headers=user_agent)
+    results = response.json()
 
-    if len(sys.argv) < 2:
-        print("Please pass an argument for the subreddit to search.")
-    else:
-        subreddit = sys.argv[1]
-        result = number_of_subscribers(subreddit)
-        print(result)
+    try:
+        return results.get('data').get('subscribers')
 
+    except Exception:
+        return 0
